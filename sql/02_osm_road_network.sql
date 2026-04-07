@@ -21,10 +21,11 @@ SELECT
     SUM(ST_Length(r.geom::geography)) / 1000 AS total_road_length_km,
     ST_Area(p.geom::geography) / 1000000 AS island_area_sq_km
 FROM
-    roads AS r,
     places_a AS p
+JOIN
+    roads AS r ON ST_Intersects(p.geom, r.geom)
 WHERE
-    p.fclass = 'island' AND ST_Intersects(p.geom, r.geom)
+    p.fclass = 'island'
 GROUP BY
     p.name, p.geom
 ORDER BY

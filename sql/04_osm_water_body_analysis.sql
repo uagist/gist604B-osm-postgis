@@ -24,10 +24,11 @@ WITH island_water_bodies AS (
         w.name AS water_body_name,
         ST_Area(w.geom::geography) / 1000000 AS water_body_area_sq_km
     FROM
-        water_a AS w,
         places_a AS p
+    JOIN
+        water_a AS w ON ST_Intersects(p.geom, w.geom)
     WHERE
-        p.fclass = 'island' AND ST_Intersects(p.geom, w.geom)
+        p.fclass = 'island'
 ),
 island_summary AS (
     SELECT

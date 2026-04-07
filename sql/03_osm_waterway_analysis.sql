@@ -22,10 +22,11 @@ SELECT
     COUNT(*) AS number_of_waterways,
     AVG(ST_Length(w.geom::geography)) / 1000 AS avg_waterway_length_km
 FROM
-    waterways AS w,
     places_a AS p
+JOIN
+    waterways AS w ON ST_Intersects(p.geom, w.geom)
 WHERE
-    p.fclass = 'island' AND ST_Intersects(p.geom, w.geom)
+    p.fclass = 'island'
 GROUP BY
     p.name
 ORDER BY

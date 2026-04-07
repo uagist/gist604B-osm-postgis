@@ -35,10 +35,9 @@ island_roads AS (
         p.island_name,
         SUM(ST_Length(r.geom::geography)) / 1000 AS total_road_length_km
     FROM
-        roads AS r,
         island_areas AS p
-    WHERE
-        ST_Intersects(p.geom, r.geom)
+    JOIN
+        roads AS r ON ST_Intersects(p.geom, r.geom)
     GROUP BY
         p.island_name
 ),
@@ -47,10 +46,9 @@ island_waterways AS (
         p.island_name,
         SUM(ST_Length(w.geom::geography)) / 1000 AS total_waterway_length_km
     FROM
-        waterways AS w,
         island_areas AS p
-    WHERE
-        ST_Intersects(p.geom, w.geom)
+    JOIN
+        waterways AS w ON ST_Intersects(p.geom, w.geom)
     GROUP BY
         p.island_name
 ),
@@ -59,10 +57,9 @@ island_water_bodies AS (
         p.island_name,
         SUM(ST_Area(wb.geom::geography)) / 1000000 AS total_water_body_area_sq_km
     FROM
-        water_a AS wb,
         island_areas AS p
-    WHERE
-        ST_Intersects(p.geom, wb.geom)
+    JOIN
+        water_a AS wb ON ST_Intersects(p.geom, wb.geom)
     GROUP BY
         p.island_name
 )
