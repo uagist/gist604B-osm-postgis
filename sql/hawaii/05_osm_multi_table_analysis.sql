@@ -15,12 +15,12 @@
 
 -- Expected Output:
 -- - island_name
--- - geom
 -- - island_area_sq_km
 -- - total_road_length_km
 -- - total_waterway_length_km
 -- - total_water_body_area_sq_km
 -- - road_density_km_per_sq_km
+-- - geom
 
 WITH island_areas AS (
     SELECT
@@ -67,7 +67,6 @@ island_water_bodies AS (
 )
 SELECT
     a.island_name,
-    a.geom,
     a.island_area_sq_km,
     COALESCE(r.total_road_length_km, 0) AS total_road_length_km,
     COALESCE(w.total_waterway_length_km, 0) AS total_waterway_length_km,
@@ -76,7 +75,8 @@ SELECT
         WHEN a.island_area_sq_km > 0 THEN
             COALESCE(r.total_road_length_km, 0) / a.island_area_sq_km
         ELSE 0
-    END AS road_density_km_per_sq_km
+    END AS road_density_km_per_sq_km,
+    a.geom
 FROM
     island_areas a
 LEFT JOIN
