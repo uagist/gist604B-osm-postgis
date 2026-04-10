@@ -7,9 +7,10 @@
 -- - Filter POIs where fclass = 'restaurant'
 -- - Use ST_DWithin to find restaurants within 0.25 miles (402 meters) of streets
 -- - Use a CTE to isolate restaurant locations
--- - Count the number of restaurants near each street
+-- - Count the number of UNIQUE restaurants near each street (avoid double counting)
 -- - Exclude streets with no name (optional but recommended)
--- - Group by street name and geometry
+-- - Filter to include only streets with more than 10 nearby restaurants
+-- - Group by street name ONLY (aggregate geometries using ST_Union)
 -- - Order results by restaurant count (highest first)
 -- - Include geom column for spatial visualization in GeoPandas
 
@@ -29,8 +30,8 @@ WITH restaurants AS (
 
 SELECT
     rds.name AS street_name,
-    COUNT(*) AS nearby_restaurant_count,
-    rds.geom
+    COUNT(DISTINCT r.geom) AS nearby_restaurant_count,
+    ST_Union(rds.geom) AS geom
 FROM
     roads AS rds
 JOIN
@@ -39,6 +40,8 @@ WHERE
     rds.name IS NOT NULL
     AND rds.fclass = 'cycleway'
 GROUP BY
-    rds.name, rds.geom
+    rds.name
+HAVING
+    COUNT(DISTINCT r.geom) > 10
 ORDER BY
     nearby_restaurant_count DESC;
